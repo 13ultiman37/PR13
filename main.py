@@ -69,7 +69,7 @@ def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, stats=None,
 POPULATION_SIZE = 50
 P_CROSSOVER = 0.9  # probability for crossover
 P_MUTATION = 0.3  # probability for mutating an individual
-MAX_GENERATIONS = 80
+MAX_GENERATIONS = 50
 HALL_OF_FAME_SIZE = 5
 FEATURE_PENALTY_FACTOR = 0.001
 
@@ -80,10 +80,10 @@ class Breasts():
     NUM_FOLDS = 5
 
     def __init__(self):
-        self.data = pd.read_csv('breast-cancer-wisconsin1.data')
+        self.data = pd.read_csv('breast-cancer-wisconsin1.data', usecols=range(1,11))
 
-        self.X = self.data.iloc[:, 1:10]
-        self.y = self.data.iloc[:, 10]
+        self.X = self.data.iloc[:, 1:9]
+        self.y = self.data.iloc[:, 9]
 
         self.kfold = model_selection.KFold(
             n_splits=self.NUM_FOLDS, random_state=443, shuffle=True)
@@ -149,7 +149,7 @@ population, logbook = eaSimpleWithElitism(population=population,
 print('\n\nЛучшие решения:')
 for i in range(HALL_OF_FAME_SIZE):
     print(i, ': ', hof.items[i], ', приспособленность = ', hof.items[i].fitness.values[0],
-          ', верность = ', breasts.get_mean_accuracy(hof.items[i]),
+          ', точность = ', breasts.get_mean_accuracy(hof.items[i]),
           ', признаков = ', sum(hof.items[i]))
 
 maxFitnessValues, meanFitnessValues = logbook.select("max", "avg")
@@ -163,7 +163,7 @@ plt.title('Max and Average fitness over Generations')
 plt.show()
 
 allOnes = [1] * len(breasts)
-print('\n\nВыделены все признаки: ', allOnes, ', accuracy = ', breasts.get_mean_accuracy(allOnes))
+print('\n\nВсе признаки: ', allOnes, ', точность = ', breasts.get_mean_accuracy(allOnes))
 
 diff = breasts.get_mean_accuracy(hof.items[0]) - breasts.get_mean_accuracy(allOnes)
 print('\n\nВерность повысилась на {:.5f}'.format(diff))
